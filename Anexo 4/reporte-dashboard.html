@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Observabilidad de carga | DummyJSON</title>
+  <style>
+    :root { --ink:#17202a; --muted:#66737f; --paper:#f4f1ea; --panel:#fffdf8; --line:#ded8cb; --blue:#1769aa; --teal:#00897b; --amber:#d27a00; --red:#bd3c32; --green:#277d55; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:linear-gradient(135deg,#e9f0ee 0%,var(--paper) 48%,#f7e9d8 100%); font-family:Georgia, 'Times New Roman', serif; }
+    main { max-width:1240px; margin:auto; padding:34px 24px 60px; }
+    header { display:flex; justify-content:space-between; gap:24px; align-items:flex-end; border-bottom:1px solid var(--ink); padding-bottom:24px; }
+    .eyebrow { color:var(--blue); font:700 12px/1.2 Arial,sans-serif; letter-spacing:.13em; text-transform:uppercase; }
+    h1 { margin:8px 0 4px; font-size:clamp(34px,5vw,62px); line-height:.96; font-weight:500; }
+    h2 { margin:0; font-size:25px; font-weight:500; }
+    p { margin:0; line-height:1.55; }
+    .meta { max-width:330px; color:var(--muted); font:13px/1.55 Arial,sans-serif; text-align:right; }
+    .toolbar { display:flex; justify-content:space-between; gap:16px; align-items:center; padding:18px 0; font:13px Arial,sans-serif; }
+    select { border:1px solid var(--line); background:var(--panel); color:var(--ink); padding:10px 12px; border-radius:3px; cursor:pointer; }
+    select:hover { border-color:var(--blue); }
+    .status { display:inline-flex; align-items:center; gap:8px; color:var(--red); font-weight:700; }
+    .status:before { content:''; width:9px; height:9px; border-radius:50%; background:var(--red); }
+    .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .kpi,.panel { background:rgba(255,253,248,.9); border:1px solid var(--line); box-shadow:0 10px 28px rgba(41,47,51,.05); }
+    .kpi { padding:18px; min-height:130px; }
+    .kpi .label { font:700 11px Arial,sans-serif; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; }
+    .kpi strong { display:block; margin:10px 0 4px; font-size:36px; font-weight:500; }
+    .kpi small { color:var(--muted); font:12px Arial,sans-serif; }
+    .bad { color:var(--red); } .good { color:var(--green); } .warn { color:var(--amber); }
+    .grid { display:grid; grid-template-columns:1.35fr .85fr; gap:12px; margin-top:12px; }
+    .panel { padding:22px; }
+    .panel-head { display:flex; justify-content:space-between; gap:12px; align-items:start; margin-bottom:18px; }
+    .panel-head p,.note { color:var(--muted); font:12px/1.5 Arial,sans-serif; }
+    svg { display:block; width:100%; height:auto; overflow:visible; }
+    .legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:15px; font:12px Arial,sans-serif; color:var(--muted); }
+    .legend span:before { content:''; display:inline-block; width:22px; height:3px; margin:0 7px 3px 0; background:var(--blue); }
+    .legend .p95:before { background:var(--amber); } .legend .p99:before { background:var(--red); }
+    .resource-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .resource { padding:14px; border:1px dashed var(--line); min-height:92px; }
+    .resource strong { display:block; margin-top:8px; font-size:25px; font-weight:500; }
+    .analysis { margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    .analysis ol { margin:12px 0 0 22px; padding:0; } .analysis li { padding:0 0 12px 6px; line-height:1.5; }
+    footer { margin-top:24px; color:var(--muted); font:12px/1.5 Arial,sans-serif; }
+    @media (max-width:800px) { main{padding:24px 15px 40px} header,.toolbar{display:block} .meta{text-align:left;margin-top:18px} .kpis{grid-template-columns:repeat(2,1fr)} .grid,.analysis{grid-template-columns:1fr} .toolbar>*{margin-top:12px} }
+    @media (max-width:430px) { .kpis{grid-template-columns:1fr} .kpi{min-height:auto} }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div><div class="eyebrow">EV-5 / Actividad 3 / k6</div><h1>Observabilidad de carga</h1><p>DummyJSON API · carga normal · 20 VUs</p></div>
+    <div class="meta">Ventana: 30 s de ramp-up + 3 min estable + 30 s de ramp-down<br>Fuente primaria: Anexo 3/raw-results.json y summary.json</div>
+  </header>
+  <div class="toolbar"><div class="status">SLO global incumplido: P99</div><label>Vista <select id="view"><option value="global">Global</option><option value="login">Login</option><option value="search">Búsqueda</option></select></label></div>
+  <section class="kpis" aria-label="Indicadores principales">
+    <article class="kpi"><span class="label">P50 latencia</span><strong id="p50">202,95 ms</strong><small>mediana · experiencia típica</small></article>
+    <article class="kpi"><span class="label">P95 latencia</span><strong id="p95">515,11 ms</strong><small>SLO &lt; 800 ms · cumple</small></article>
+    <article class="kpi"><span class="label">P99 latencia</span><strong id="p99" class="bad">2.957,53 ms</strong><small>SLO &lt; 1.500 ms · no cumple</small></article>
+    <article class="kpi"><span class="label">Throughput</span><strong>10,06 req/s</strong><small>2.447 solicitudes · pico VUs: 20</small></article>
+  </section>
+  <section class="grid">
+    <article class="panel"><div class="panel-head"><div><h2>Cola de latencia</h2><p>Percentiles de <b>http_req_duration</b>, en milisegundos</p></div><span class="eyebrow">SLA / SLO</span></div>
+      <svg viewBox="0 0 720 290" role="img" aria-label="Comparación de percentiles de latencia contra umbrales"><line x1="60" y1="235" x2="690" y2="235" stroke="#9da5a8"/><line x1="60" y1="35" x2="60" y2="235" stroke="#9da5a8"/><line x1="60" y1="135" x2="690" y2="135" stroke="#eee8dd"/><line x1="60" y1="75" x2="690" y2="75" stroke="#eee8dd"/><path d="M130 199 L365 184 L600 37" fill="none" stroke="#1769aa" stroke-width="4"/><circle cx="130" cy="199" r="6" fill="#1769aa"/><circle cx="365" cy="184" r="6" fill="#1769aa"/><circle cx="600" cy="37" r="6" fill="#1769aa"/><line x1="60" y1="155" x2="690" y2="155" stroke="#d27a00" stroke-dasharray="7 6" stroke-width="2"/><line x1="60" y1="85" x2="690" y2="85" stroke="#bd3c32" stroke-dasharray="7 6" stroke-width="2"/><text x="112" y="260" font-family="Arial" font-size="14">P50</text><text x="347" y="260" font-family="Arial" font-size="14">P95</text><text x="582" y="260" font-family="Arial" font-size="14">P99</text><text x="65" y="250" font-family="Arial" font-size="11" fill="#66737f">0 ms</text><text x="65" y="155" font-family="Arial" font-size="11" fill="#66737f">800</text><text x="65" y="85" font-family="Arial" font-size="11" fill="#66737f">1.500</text><text x="620" y="151" font-family="Arial" font-size="11" fill="#d27a00">SLO P95</text><text x="620" y="81" font-family="Arial" font-size="11" fill="#bd3c32">SLO P99</text></svg>
+      <div class="legend"><span>observado</span><span class="p95">SLO P95 800 ms</span><span class="p99">SLO P99 1.500 ms</span></div><p class="note" style="margin-top:14px">La cola larga concentra el riesgo: P99 es 5,7 veces P50. El gráfico usa el resumen de la misma ejecución exportada por k6.</p>
+    </article>
+    <article class="panel"><div class="panel-head"><div><h2>Señales de recursos</h2><p>Lo observable desde k6 y lo que falta instrumentar</p></div><span class="eyebrow">Trazabilidad</span></div>
+      <div class="resource-grid"><div class="resource"><span class="label">Red recibida</span><strong>92,53 kB/s</strong><small class="note">data_received de k6</small></div><div class="resource"><span class="label">Red enviada</span><strong>3,46 kB/s</strong><small class="note">data_sent de k6</small></div><div class="resource"><span class="label">CPU host</span><strong class="warn">N/D</strong><small class="note">sin agente Prometheus/APM</small></div><div class="resource"><span class="label">RAM e I/O</span><strong class="warn">N/D</strong><small class="note">no presentes en A3</small></div></div>
+      <p class="note" style="margin-top:16px">N/D no significa cero: es una señal de cobertura pendiente. La red mostrada es tráfico medido por k6, no utilización de la interfaz del servidor.</p>
+    </article>
+  </section>
+  <section class="analysis">
+    <article class="panel"><h2>Comentario analítico</h2><p style="margin-top:12px">El KPI crítico de latencia es el P99: alcanza <b>2.957,53 ms</b>, casi el doble del SLO de 1.500 ms y 5,7 veces la mediana de 202,95 ms. Esta separación revela una cola larga: la mayoría de respuestas es rápida, pero una fracción pequeña enfrenta esperas severas. El P95 de 515,11 ms sí cumple el objetivo de 800 ms, por lo que el promedio y la experiencia típica no bastan para declarar el servicio saludable. El patrón es compatible con variabilidad de red pública, cold starts, límites de terceros o saturación puntual; el CSV secundario no coincide exactamente con el resumen y debe mantenerse como evidencia separada.</p><p style="margin-top:12px">El segundo KPI crítico es el throughput, <b>10,06 req/s</b> con 2.447 solicitudes y 20 VUs máximos. Representa la capacidad entregada durante la carga normal, pero debe leerse junto con errores: k6 registra tasa de error HTTP de <b>0%</b> y checks funcionales 100% (4.282/4.282), mientras el threshold de <code>http_req_failed</code> aparece como métrica de fallos semánticos, no como 2.447 errores. La combinación de throughput estable y P99 incumplido indica que el sistema atiende la demanda, aunque degrada a usuarios de cola. No hay series cuantitativas de CPU, RAM o disco; por tanto no es válido atribuir el cuello de botella al host.</p><p style="margin-top:12px"><b>Conclusión:</b> el SLO P95 se alcanza, pero el SLO P99 no. La siguiente iteración debe capturar trazas por endpoint y métricas de infraestructura para confirmar si la cola nace en cliente/red, autenticación o un componente aguas abajo.</p></article>
+    <article class="panel"><h2>Recomendaciones priorizadas</h2><ol><li><b>Alta prioridad · bajo esfuerzo:</b> instrumentar Prometheus/APM y trazas distribuidas por <code>step</code> y endpoint; registrar CPU, RAM, I/O, red, códigos HTTP y duración aguas abajo. Esfuerzo: 0,5–1 día. Impacto: convierte el P99 en una señal accionable y permite localizar la cola.</li><li><b>Alta prioridad · bajo esfuerzo:</b> revisar timeouts, reintentos y pool de conexiones; reutilizar conexiones HTTP y separar alertas P95/P99 por <code>browse</code>, <code>search</code>, <code>login</code> y <code>perfil</code>. Esfuerzo: 1 día. Impacto: reduce esperas puntuales sin aumentar VUs.</li><li><b>Prioridad media · bajo esfuerzo:</b> repetir la prueba en un entorno controlado y comparar tres corridas con la misma carga, manteniendo P95 &lt; 800 ms, P99 &lt; 1.500 ms y error &lt; 1%. Esfuerzo: 1 día. Impacto: distingue variación de red pública de saturación reproducible y protege el SLO.</li></ol></article>
+  </section>
+  <footer>Exportado para EV-5 · Fuente primaria: Anexo 3/summary.json y Anexo 3/raw-results.json · Fuente secundaria: Anexo 5/raw-results.csv · Panel offline, sin credenciales ni conexión externa.</footer>
+</main>
+<script>
+  const data = { global:{p50:'202,95 ms',p95:'515,11 ms',p99:'2.957,53 ms'}, login:{p50:'238 ms',p95:'609,45 ms',p99:'11.514 ms'}, search:{p50:'200 ms',p95:'455,95 ms',p99:'6.095 ms'} };
+  document.getElementById('view').addEventListener('change', event => { const value=data[event.target.value]; ['p50','p95','p99'].forEach(key => document.getElementById(key).textContent=value[key]); });
+</script>
+</body>
+</html>

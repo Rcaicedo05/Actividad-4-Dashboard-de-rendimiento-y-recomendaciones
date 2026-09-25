@@ -1,0 +1,28 @@
+{
+  "title": "Observabilidad de carga - DummyJSON API",
+  "version": "1.0",
+  "source": {
+    "primary": ["Anexo 3/summary.json", "Anexo 3/raw-results.json"],
+    "secondary": ["Anexo 5/raw-results.csv"],
+    "run": "30s ramp-up + 3m steady state + 30s ramp-down",
+    "max_vus": 20
+  },
+  "slo": {
+    "latency_p95_ms": 800,
+    "latency_p99_ms": 1500,
+    "http_error_rate": 0.01
+  },
+  "panels": [
+    {"id":"latency-percentiles","type":"timeseries","title":"Latencia P50/P95/P99","unit":"ms","values":{"p50":202.95,"p95":515.11,"p99":2957.534},"thresholds":{"p95":800,"p99":1500}},
+    {"id":"throughput","type":"stat","title":"Throughput","unit":"req/s","value":10.0632033903,"requests":2447},
+    {"id":"error-rate","type":"stat","title":"Tasa de error HTTP","unit":"percent","value":0,"threshold":1,"checks":{"passes":4282,"fails":0}},
+    {"id":"network-k6","type":"stat","title":"Red observada por k6","unit":"kB/s","data_received":92.526578,"data_sent":3.461816,"note":"No equivale a utilizacion de la interfaz del servidor."},
+    {"id":"system-resources","type":"status","title":"CPU/RAM/I/O del host","status":"not_instrumented","note":"Se requiere Prometheus, APM o agente del sistema; no inventar valores."}
+  ],
+  "annotations": [
+    {"label":"threshold p95","value":"p(95)<800 ms","status":"pass"},
+    {"label":"threshold p99","value":"p(99)<1500 ms","status":"fail"},
+    {"label":"threshold http errors","value":"rate<0.01","status":"pass"}
+  ],
+  "traceability_note": "El CSV contiene una corrida no identica al resumen (2576 filas http_req frente a 2447). Se conserva como evidencia secundaria y no se mezclan sus percentiles con la fuente primaria."
+}

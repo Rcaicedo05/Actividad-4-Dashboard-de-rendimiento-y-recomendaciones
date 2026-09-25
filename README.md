@@ -21,6 +21,8 @@ Abrir este archivo directamente en el navegador:
 
 El dashboard funciona offline y no requiere instalar dependencias. Incluye un selector para consultar la vista global, login o búsqueda.
 
+Se eligió un HTML estático con datos exportados como decisión de diseño: DummyJSON es un servicio tercero sin Prometheus/APM accesible, y este formato conserva la trazabilidad de la corrida y permite revisar la evidencia sin depender de una instancia Grafana activa.
+
 ## Resultados principales
 
 Los valores principales de la ejecución usada como fuente primaria son:

@@ -36,6 +36,8 @@ Los valores principales de la ejecución usada como fuente primaria son:
 
 El principal hallazgo es una cola larga de latencia: el P99 incumple el SLO aunque el P95 y la tasa de error cumplen.
 
+El informe técnico compara dos corridas: corrida 1 P50/P95/P99 de 200,76/277,31/679,27 ms frente a 202,95/515,12/2.957,53 ms en corrida 2. Además, `login` pasó de 314,95 ms a 609,45 ms de P95 y superó su SLO de 600 ms.
+
 ## Estructura del proyecto
 
 - `Anexo 1/`: script de prueba de carga `k6-load-test-dummyjson.js`.
@@ -73,7 +75,7 @@ k6 run -e BASE_URL=https://dummyjson.com -e VUS=20 k6-load-test-dummyjson.js
 
 La fuente primaria del dashboard es `Anexo 3/summary.json`, contrastada con `Anexo 3/raw-results.json`. El CSV se conserva como evidencia secundaria porque corresponde a una ejecución que no coincide exactamente con el resumen: registra 2.576 muestras de solicitudes frente a 2.447 en el resumen.
 
-Los datos de CPU, RAM e I/O del servidor no fueron instrumentados en la ejecución original. Por eso el dashboard los muestra como `N/D` y no como cero. Los valores de red mostrados corresponden al tráfico medido por k6 (`data_received` y `data_sent`), no a la utilización de las interfaces del servidor.
+Los datos de CPU, RAM e I/O del servidor no fueron instrumentados porque DummyJSON es un servicio de terceros. El informe aporta CPU del cliente: 11% en una corrida auxiliar de 10 VUs durante 30 s. Ese valor se incluye como evidencia del generador, no del servidor. Los valores de red mostrados corresponden al tráfico medido por k6 (`data_received` y `data_sent`), no a la utilización de las interfaces del servidor.
 
 ## Recomendaciones resumidas
 
